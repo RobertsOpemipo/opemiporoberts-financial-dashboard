@@ -77,7 +77,7 @@ const Dashboard = () => {
             <header className="flex justify-between items-center p-4 bg-white-800 text-black shadow-md  fixed w-full z-10">
                 <h1 className="lg:text-3xl text-md font-bold">Financial Dashboard</h1>
                 <div className="flex items-center">
-                    <img src="../../public/images/profile.jpg" alt="Profile" className="w-8 h-8 rounded-full mr-2" />
+                    <img src="images/profile.jpg" alt="Profile" className="w-8 h-8 rounded-full mr-2" />
                     <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => signOut()}>
                         Sign Out
                     </button>

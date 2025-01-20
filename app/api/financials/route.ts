@@ -13,8 +13,7 @@ export async function GET() {
 
     try {
         connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute('SELECT * FROM financial_data');
-
+        const [rows]: [any[], mysql.OkPacket] = await connection.execute('SELECT * FROM financial_data');
 
         if (rows.length === 0) {
             return NextResponse.json({ message: 'No data found' }, { status: 404 });

@@ -11,10 +11,6 @@ const RevenueChart = ({ financials }) => {
 
     const revenueData = financials.map((item: { revenue: any; }) => item.revenue || 0); 
     
-
-
-
-
     useEffect(() => {
         const ctx = document.getElementById('revenueChart').getContext('2d');
 

@@ -34,16 +34,16 @@ const Dashboard = () => {
         fetchData();
     }, []);
 
-    
+
     const totalRevenue = financials.reduce((acc, curr) => acc + parseFloat(curr.revenue) || 0, 0);
     // const averageRevenue = financials.length ? totalRevenue / financials.length : 0;
     const totalExpenses = financials.reduce((acc, curr) => acc + parseFloat(curr.expenses) || 0, 0);
     // const averageExpenses = financials.length ? totalExpenses / financials.length : 0;
-    const totalProfit = financials.reduce((acc, curr) => acc + parseFloat(curr.profit) || 0, 0);
+    //const totalProfit = financials.reduce((acc, curr) => acc + parseFloat(curr.profit) || 0, 0);
     // const averageProfit = financials.length ? totalProfit / financials.length : 0;
     const profit = totalRevenue - totalExpenses;
 
-    
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen">
@@ -60,7 +60,7 @@ const Dashboard = () => {
         );
     }
 
-    
+
     const handleCsvUpload = (data) => {
         const updatedFinancials = data.map(row => ({
             revenue: row.revenue || 0,

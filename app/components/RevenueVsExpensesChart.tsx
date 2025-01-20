@@ -34,7 +34,7 @@ const RevenueVsExpensesChart = ({ financials }) => {
             },
             {
                 label: 'Profit',
-                data: financials.map(item => item.revenue - item.expenses), // Calculate profit
+                data: financials.map(item => item.revenue - item.expenses), 
                 backgroundColor: 'rgba(153, 102, 255, 0.5)',
                 borderColor: 'rgba(153, 102, 255, 1)',
                 borderWidth: 1,
@@ -44,7 +44,7 @@ const RevenueVsExpensesChart = ({ financials }) => {
 
     const options = {
         responsive: true,
-        maintainAspectRatio: false, // Ensures the chart fills the container
+        maintainAspectRatio: false, 
         plugins: {
             legend: {
                 position: 'top',

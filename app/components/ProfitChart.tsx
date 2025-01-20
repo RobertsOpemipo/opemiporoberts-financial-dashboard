@@ -6,13 +6,9 @@ import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
 const ProfitChart = ({ financials }) => {
-    const calculateAverage = (data) => {
-        const total = data.reduce((acc, curr) => acc + curr, 0);
-        return data.length ? total / data.length : 0; 
-    };
 
     const profitData = financials.map(item => item.profit || 0);
-    const averageProfit = calculateAverage(profitData);
+    
 
     useEffect(() => {
         try {
@@ -37,7 +33,7 @@ const ProfitChart = ({ financials }) => {
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false, // Allow the chart to fill the container
+                    maintainAspectRatio: false, 
                     scales: {
                         y: {
                             beginAtZero: true
@@ -52,41 +48,13 @@ const ProfitChart = ({ financials }) => {
                 }
             });
 
-            const drawAverageLine = () => {
-                const averageLine = {
-                    id: 'averageLine',
-                    beforeDraw: (chart) => {
-                        const { ctx, chartArea: { bottom, left, right, height } } = chart;
-
-                        ctx.save();
-                        ctx.strokeStyle = 'rgba(0, 0, 255, 1)';
-                        ctx.lineWidth = 2;
-                        const avgY = bottom - (averageProfit / Math.max(...profitData) * height);
-                        ctx.beginPath();
-                        ctx.moveTo(left, avgY);
-                        ctx.lineTo(right, avgY);
-                        ctx.stroke();
-                        ctx.restore();
-
-                        ctx.fillStyle = 'rgba(0, 0, 255, 1)';
-                        ctx.font = '12px Arial';
-                        ctx.fillText(`Avg: $${averageProfit.toFixed(2)}`, right - 100, avgY - 10);
-                    }
-                };
-
-                Chart.register(averageLine);
-                chartInstance.update();
-            };
-
-            drawAverageLine();
-
             return () => {
                 chartInstance.destroy();
             };
         } catch (error) {
             alert('An error occurred while rendering the chart: ' + error.message);
         }
-    }, [financials, averageProfit]);
+    }, [financials]);
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '400px' }}>

@@ -8,7 +8,7 @@ const dbConfig = {
     database: 'financial_dashboard',
 };
 
-export async function GET(req: Request) {
+export async function GET() {
     let connection;
 
     try {

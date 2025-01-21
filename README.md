@@ -2,7 +2,7 @@
 
 ## Description
 
-The Financial Dashboard Application is a web-based tool designed to help users track and manage their financial metrics easily. Users can visualize key financial data, such as revenue, expenses, and profit, through interactive charts. The application also allows for CSV file uploads to import financial data, providing a seamless user experience.
+The Financial Dashboard Application helps users track and manage their financial metrics easily. Users can visualize key financial data, such as revenue, expenses, and profit, through interactive charts. The application also allows for CSV file uploads to import financial data, providing a seamless user experience.
 
 ## Features
 
@@ -49,7 +49,7 @@ The Financial Dashboard Application is a web-based tool designed to help users t
 ## Prerequisites
 
 - Node.js (v14 or later)
-- npm (v6 or later) or Yarn
+- npm (v6 or later)
 - MySQL (v7 or later)
 
 ## CSV Upload

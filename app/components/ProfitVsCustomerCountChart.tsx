@@ -5,10 +5,21 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, Tooltip, Le
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, Tooltip, Legend, Title);
 
-const ProfitVsCustomerCountChart = ({ financials }) => {
+// Define the structure of the financial data
+interface FinancialData {
+    customer_count: string | number;
+    profit: string | number;
+}
+
+// Props type for the chart component
+interface ProfitVsCustomerCountChartProps {
+    financials: FinancialData[];
+}
+
+const ProfitVsCustomerCountChart: React.FC<ProfitVsCustomerCountChartProps> = ({ financials }) => {
     const data = financials.map(item => ({
-        x: parseFloat(item.customer_count),
-        y: parseFloat(item.profit),
+        x: parseFloat(String(item.customer_count)) || 0,
+        y: parseFloat(String(item.profit)) || 0,
     }));
 
     const chartData = {
@@ -25,7 +36,7 @@ const ProfitVsCustomerCountChart = ({ financials }) => {
 
     const options = {
         responsive: true,
-        maintainAspectRatio: false, 
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 display: true,
@@ -50,8 +61,10 @@ const ProfitVsCustomerCountChart = ({ financials }) => {
                 },
                 beginAtZero: true,
                 ticks: {
-                    callback: function(value) {
-                        return '$' + value; 
+                    callback: function (tickValue: string | number) {
+                        // Ensure tickValue is coerced into a number for formatting
+                        const value = typeof tickValue === 'string' ? parseFloat(tickValue) : tickValue;
+                        return `$${value}`;
                     },
                     max: 5000,
                 },

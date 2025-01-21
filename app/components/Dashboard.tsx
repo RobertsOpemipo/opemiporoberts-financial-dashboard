@@ -10,6 +10,7 @@ import RevenueVsExpensesChart from './RevenueVsExpensesChart';
 import ProfitVsCustomerCountChart from './ProfitVsCustomerCountChart';
 import CsvUpload from './CsvUpload';
 
+// Define the structure of financial data
 interface FinancialData {
     date: string;
     revenue: number;  
@@ -24,44 +25,47 @@ const Dashboard = () => {
     const [error, setError] = useState<string | null>(null); 
 
     useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const response = await fetch('/api/financials');
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            const data = await response.json();
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/financials');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
 
-            
-            const parsedData = data.map((item: any) => ({
-                ...item,
-                revenue: parseFloat(item.revenue) || 0,
-                expenses: parseFloat(item.expenses) || 0,
-                profit: parseFloat(item.profit) || 0,
-                customer_count: parseInt(item.customer_count, 10) || 0,
-            }));
+                // Type safe parsing of data
+                const parsedData: FinancialData[] = data.map((item: any) => ({
+                    ...item,
+                    revenue: parseFloat(item.revenue) || 0,
+                    expenses: parseFloat(item.expenses) || 0,
+                    profit: parseFloat(item.profit) || 0,
+                    customer_count: parseInt(item.customer_count, 10) || 0,
+                }));
 
-            setFinancials(parsedData);
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError('An unknown error occurred');
+                setFinancials(parsedData);
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError('An unknown error occurred');
+                }
+            } finally {
+                setLoading(false);
             }
-        } finally {
+        };
+
+        fetchData();
+
+        // Cleanup function for async request
+        return () => {
             setLoading(false);
-        }
-    };
-    fetchData();
-    }, []);
+        };
+    }, []); // This effect runs once when the component mounts
 
-    const totalRevenue = financials.reduce((acc: number, curr) => acc + (curr.revenue || 0), 0);
-    const totalExpenses = financials.reduce((acc: number, curr) => acc + (curr.expenses || 0), 0);
+    // Calculations
+    const totalRevenue = financials.reduce((acc, curr) => acc + (curr.revenue || 0), 0);
+    const totalExpenses = financials.reduce((acc, curr) => acc + (curr.expenses || 0), 0);
     const profit = totalRevenue - totalExpenses;
-
-
-
-
 
     if (loading) {
         return (
@@ -79,18 +83,10 @@ const Dashboard = () => {
         );
     }
 
-    const handleCsvUpload = (data: any[]) => {
-    const updatedFinancials = data.map((row) => ({
-        date: row.date,
-        revenue: parseFloat(row.revenue) || 0,  
-        expenses: parseFloat(row.expenses) || 0,  
-        profit: parseFloat(row.profit) || 0,  
-        customer_count: parseInt(row.customer_count, 10) || 0,
-    }));
-
-    setFinancials((prev) => [...prev, ...updatedFinancials]);
+    const handleCsvUpload = (data: FinancialData[]) => {
+        // Ensure correct typing on upload
+        setFinancials((prev) => [...prev, ...data]);
     };
-
 
     return (
         <div className="flex flex-col h-screen">

@@ -12,36 +12,34 @@ import CsvUpload from './CsvUpload';
 const Dashboard = () => {
     const [financials, setFinancials] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
+    const [error, setError] = useState<string | null>(null); // Ensure error state is typed as string or null
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('/api/financials');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setFinancials(data);
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
+    const fetchData = async () => {
+        try {
+            const response = await fetch('/api/financials');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
-        fetchData();
-    }, []);
+            const data = await response.json();
+            setFinancials(data);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);  
+            } else {
+                setError('An unknown error occurred');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchData();
+}, []);
 
 
     const totalRevenue = financials.reduce((acc, curr) => acc + parseFloat(curr.revenue) || 0, 0);
-    // const averageRevenue = financials.length ? totalRevenue / financials.length : 0;
     const totalExpenses = financials.reduce((acc, curr) => acc + parseFloat(curr.expenses) || 0, 0);
-    // const averageExpenses = financials.length ? totalExpenses / financials.length : 0;
-    //const totalProfit = financials.reduce((acc, curr) => acc + parseFloat(curr.profit) || 0, 0);
-    // const averageProfit = financials.length ? totalProfit / financials.length : 0;
     const profit = totalRevenue - totalExpenses;
-
 
     if (loading) {
         return (
@@ -59,28 +57,20 @@ const Dashboard = () => {
         );
     }
 
-
-    const handleCsvUpload = (data) => {
-
-
-
-    const updatedFinancials = data.map((row) => ({
-        date: row.date,  
-        revenue: parseFloat(row.revenue) || 0,
-        expenses: parseFloat(row.expenses) || 0,
-        profit: parseFloat(row.profit) || 0,
-        customer_count: parseInt(row.customer_count, 10) || 0,
-    }));
-
-
-    setFinancials((prev) => [...prev, ...updatedFinancials]);
-
-};
-
+    const handleCsvUpload = (data: any[]) => {
+        const updatedFinancials = data.map((row) => ({
+            date: row.date,
+            revenue: parseFloat(row.revenue) || 0,
+            expenses: parseFloat(row.expenses) || 0,
+            profit: parseFloat(row.profit) || 0,
+            customer_count: parseInt(row.customer_count, 10) || 0,
+        }));
+        setFinancials((prev) => [...prev, ...updatedFinancials]);
+    };
 
     return (
         <div className="flex flex-col h-screen">
-            <header className="flex justify-between items-center p-4 bg-white-800 text-black shadow-md  fixed w-full z-10">
+            <header className="flex justify-between items-center p-4 bg-white-800 text-black shadow-md fixed w-full z-10">
                 <h1 className="lg:text-3xl text-md font-bold">Financial Dashboard</h1>
                 <div className="flex items-center">
                     <img src="images/profile.jpg" alt="Profile" className="w-8 h-8 rounded-full mr-2" />

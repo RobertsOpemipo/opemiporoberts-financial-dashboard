@@ -143,7 +143,13 @@ const Dashboard = () => {
                     </div>
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <h2 className="text-xl font-bold">Profit vs. Customer Count</h2>
-                        <ProfitVsCustomerCountChart financials={financials} />
+                        <ProfitVsCustomerCountChart
+                            financials={financials.map((item) => ({
+                                ...item,
+                                profit: item.profit ?? 0,  
+                                customer_count: item.customer_count ?? 0,  
+                            }))}
+                        />
                     </div>
                 </div>
             </div>

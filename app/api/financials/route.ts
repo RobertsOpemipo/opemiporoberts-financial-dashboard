@@ -2,11 +2,12 @@ import { NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
 
 const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'financial_dashboard',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
 };
+
 
 export async function GET() {
     let connection;

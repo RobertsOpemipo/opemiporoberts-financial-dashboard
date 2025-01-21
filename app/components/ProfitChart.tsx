@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
+import { format } from 'date-fns';
 
 Chart.register(...registerables);
 
 interface FinancialData {
     date: string;
-    profit: string; 
+    profit: number;
 }
 
 interface ProfitChartProps {
@@ -15,36 +16,29 @@ interface ProfitChartProps {
 }
 
 const ProfitChart: React.FC<ProfitChartProps> = ({ financials }) => {
-    const profitData = financials.map(item => {
-        const parsedProfit = parseFloat(item.profit);
-        return isNaN(parsedProfit) ? 0 : parsedProfit;
-    });
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const chartRef = useRef<Chart | null>(null);
 
     useEffect(() => {
-        const canvas = document.getElementById('profitChart') as HTMLCanvasElement | null;
+        if (!canvasRef.current) return;
 
-        if (!canvas) {
-            console.warn('Canvas element not found for profit chart');
-            return;
-        }
+        const ctx = canvasRef.current.getContext('2d');
+        if (!ctx) return;
 
-        const ctx = canvas.getContext('2d');
-
-        if (!ctx) {
-            console.warn('Failed to get 2D context for profit chart');
-            return;
-        }
-
-        
         const labels = financials.map(item => {
-            const dateValue = new Date(item.date);
-            return isNaN(dateValue.getTime()) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
+            try {
+                return format(new Date(item.date), 'yyyy-MM-dd');
+            } catch {
+                return 'Invalid Date';
+            }
         });
 
-        const chartInstance = new Chart(ctx, {
+        const profitData = financials.map(item => item.profit || 0);
+
+        chartRef.current = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: labels,
+                labels,
                 datasets: [
                     {
                         label: 'Monthly Profit',
@@ -66,7 +60,7 @@ const ProfitChart: React.FC<ProfitChartProps> = ({ financials }) => {
                             text: 'Profit ($)',
                         },
                         ticks: {
-                            callback: (value) => `$${value}`,
+                            callback: value => `$${value}`,
                         },
                     },
                     x: {
@@ -79,20 +73,18 @@ const ProfitChart: React.FC<ProfitChartProps> = ({ financials }) => {
             },
         });
 
-        
         return () => {
-            chartInstance.destroy();
+            chartRef.current?.destroy();
         };
     }, [financials]);
 
-    
     if (financials.length === 0) {
         return <p className="text-center">No profit data available.</p>;
     }
 
     return (
         <div style={{ position: 'relative', width: '100%', height: '400px' }}>
-            <canvas id="profitChart"></canvas>
+            <canvas ref={canvasRef}></canvas>
         </div>
     );
 };

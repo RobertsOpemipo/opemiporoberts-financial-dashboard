@@ -7,7 +7,7 @@ Chart.register(...registerables);
 
 interface FinancialData {
     date: string;
-    profit: string; // Adjust type if necessary
+    profit: string;  // Profit is passed as a string to handle CSV import, for example
 }
 
 interface ProfitChartProps {
@@ -15,62 +15,75 @@ interface ProfitChartProps {
 }
 
 const ProfitChart: React.FC<ProfitChartProps> = ({ financials }) => {
-    const profitData = financials.map(item => parseFloat(item.profit) || 0);
+    const profitData = financials.map(item => {
+        // Parsing profit and handling potential errors with default value of 0
+        const parsedProfit = parseFloat(item.profit);
+        return isNaN(parsedProfit) ? 0 : parsedProfit;
+    });
 
     useEffect(() => {
-        try {
-            const canvas = document.getElementById('profitChart') as HTMLCanvasElement | null;
+        const renderChart = () => {
+            try {
+                const canvas = document.getElementById('profitChart') as HTMLCanvasElement | null;
 
-            if (!canvas) {
-                throw new Error('Chart context not found');
-            }
+                if (!canvas) {
+                    throw new Error('Chart context not found');
+                }
 
-            const ctx = canvas.getContext('2d');
+                const ctx = canvas.getContext('2d');
 
-            if (!ctx) {
-                throw new Error('Chart context not found');
-            }
+                if (!ctx) {
+                    throw new Error('Chart context not found');
+                }
 
-            const labels = financials.map(item => {
-                const dateValue = new Date(item.date);
-                return isNaN(dateValue.getTime()) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
-            });
+                const labels = financials.map(item => {
+                    const dateValue = new Date(item.date);
+                    return isNaN(dateValue.getTime()) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
+                });
 
-            const chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Monthly Profit',
-                        data: profitData,
-                        borderColor: 'rgba(0, 0, 255, 1)',
-                        borderWidth: 2,
-                        fill: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date'
+                const chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Monthly Profit',
+                            data: profitData,
+                            borderColor: 'rgba(0, 0, 255, 1)',
+                            borderWidth: 2,
+                            fill: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Date'
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
-            return () => {
+                return chartInstance;
+            } catch (error) {
+                console.error('An error occurred while rendering the chart:', error);
+            }
+        };
+
+        const chartInstance = renderChart();
+
+        // Cleanup on component unmount or when `financials` changes
+        return () => {
+            if (chartInstance) {
                 chartInstance.destroy();
-            };
-        } catch (error) {
-            console.error('An error occurred while rendering the chart:', error);
-        }
+            }
+        };
     }, [financials]);
 
     return (

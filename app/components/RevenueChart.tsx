@@ -7,7 +7,7 @@ Chart.register(...registerables);
 
 interface FinancialData {
     date: string | number | Date;
-    revenue: number; // Adjust type if necessary
+    revenue: number; 
 }
 
 interface RevenueChartProps {

@@ -19,7 +19,13 @@ const ExpensesChart: React.FC<ExpensesChartProps> = ({ financials }) => {
 
     useEffect(() => {
         try {
-            const ctx = document.getElementById('expensesChart')?.getContext('2d');
+            const canvas = document.getElementById('expensesChart') as HTMLCanvasElement | null;
+
+            if (!canvas) {
+                throw new Error('Chart context not found');
+            }
+
+            const ctx = canvas.getContext('2d');
 
             if (!ctx) {
                 throw new Error('Chart context not found');

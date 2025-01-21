@@ -5,18 +5,29 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-const ExpensesChart = ({ financials }) => {
-    
+interface FinancialData {
+    date: string;
+    expenses: string;
+}
 
-    const expensesData = financials.map(item => item.expenses || 0);
+interface ExpensesChartProps {
+    financials: FinancialData[];
+}
+
+const ExpensesChart: React.FC<ExpensesChartProps> = ({ financials }) => {
+    const expensesData = financials.map(item => parseFloat(item.expenses) || 0);
 
     useEffect(() => {
         try {
-            const ctx = document.getElementById('expensesChart').getContext('2d');
+            const ctx = document.getElementById('expensesChart')?.getContext('2d');
+
+            if (!ctx) {
+                throw new Error('Chart context not found');
+            }
 
             const labels = financials.map(item => {
                 const dateValue = new Date(item.date);
-                return isNaN(dateValue) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
+                return isNaN(dateValue.getTime()) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
             });
 
             const chartInstance = new Chart(ctx, {
@@ -47,12 +58,11 @@ const ExpensesChart = ({ financials }) => {
                 }
             });
 
-
             return () => {
                 chartInstance.destroy();
             };
         } catch (error) {
-            alert('An error occurred while rendering the chart: ' + error.message);
+            console.error('An error occurred while rendering the chart:', error);
         }
     }, [financials]);
 

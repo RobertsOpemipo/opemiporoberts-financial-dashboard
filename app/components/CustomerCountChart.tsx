@@ -37,7 +37,7 @@ const CustomerCountChart = ({ financials }) => {
 
     const options = {
         responsive: true,
-        maintainAspectRatio: false, // Allows the chart to fill its container
+        maintainAspectRatio: false, 
         indexAxis: 'x',
         plugins: {
             legend: {
@@ -65,7 +65,7 @@ const CustomerCountChart = ({ financials }) => {
                     display: true,
                     text: 'Customer Count',
                 },
-                beginAtZero: true, // Start y-axis from zero
+                beginAtZero: true, 
             },
         },
     };

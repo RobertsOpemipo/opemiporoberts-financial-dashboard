@@ -1,12 +1,10 @@
 # Financial Dashboard Application
 
 ## Description
-
 The Financial Dashboard Application is a web-based tool designed to help users track and manage their financial metrics easily. Users can visualize key financial data, such as revenue, expenses, and profit, through interactive charts. The application also allows for CSV file uploads to import financial data, providing a seamless user experience.
 
 ## Features
-
-- **Data Visualization**:
+- **Data Visualization**: 
   - Total Revenue
   - Total Expenses
   - Total Profit
@@ -20,9 +18,7 @@ The Financial Dashboard Application is a web-based tool designed to help users t
 - **Responsive Design**: Optimized for both mobile and desktop devices.
 
 ## Components
-
 ### Frontend Components
-
 - **Dashboard**: The main component that aggregates financial data and displays various metrics and charts.
 - **CsvUpload**: Component that facilitates the upload of CSV files to import financial data.
 - **ExpensesChart**: Displays a chart of monthly expenses.
@@ -33,13 +29,12 @@ The Financial Dashboard Application is a web-based tool designed to help users t
 - **ProfitVsCustomerCountChart**: Compares profit with customer counts.
 
 ### Technologies Used
-
-- **Frontend**:
+- **Frontend**: 
   - React (for building user interfaces)
   - JavaScript
   - HTML
   - CSS
-- **Backend**:
+- **Backend**: 
   - Node.js (for server-side logic)
   - Express.js (for creating the API)
 - **Database**: MySQL
@@ -47,7 +42,6 @@ The Financial Dashboard Application is a web-based tool designed to help users t
 - **Authentication**: NextAuth for managing user sessions.
 
 ## Prerequisites
-
 - Node.js (v14 or later)
 - npm (v6 or later) or Yarn
 - MySQL (v7 or later)
@@ -55,7 +49,6 @@ The Financial Dashboard Application is a web-based tool designed to help users t
 ## CSV Upload
 
 To upload a CSV file, follow these steps:
-
 1. Click on the "+" button on the dashboard.
 2. Select the CSV file from your local machine.
 3. Make sure that the CSV file has a date format of (yyyy-mm-dd)

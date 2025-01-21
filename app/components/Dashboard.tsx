@@ -12,9 +12,9 @@ import CsvUpload from './CsvUpload';
 
 interface FinancialData {
     date: string;
-    revenue: string;  
-    expenses: string;  
-    profit?: string;   
+    revenue: number;  
+    expenses: number;  
+    profit?: number;   
     customer_count?: number; 
 }
 
@@ -45,8 +45,8 @@ const Dashboard = () => {
         fetchData();
     }, []);
 
-    const totalRevenue = financials.reduce((acc: number, curr) => acc + parseFloat(curr.revenue) || 0, 0);
-    const totalExpenses = financials.reduce((acc: number, curr) => acc + parseFloat(curr.expenses) || 0, 0);
+    const totalRevenue = financials.reduce((acc: number, curr) => acc + curr.revenue, 0);
+    const totalExpenses = financials.reduce((acc: number, curr) => acc + curr.expenses, 0);
     const profit = totalRevenue - totalExpenses;
 
     if (loading) {
@@ -68,9 +68,9 @@ const Dashboard = () => {
     const handleCsvUpload = (data: any[]) => {
         const updatedFinancials = data.map((row) => ({
             date: row.date,
-            revenue: (parseFloat(row.revenue) || 0).toString(),
-            expenses: (parseFloat(row.expenses) || 0).toString(),
-            profit: (parseFloat(row.profit) || 0).toString(),
+            revenue: parseFloat(row.revenue) || 0,
+            expenses: parseFloat(row.expenses) || 0,
+            profit: parseFloat(row.profit) || 0,
             customer_count: parseInt(row.customer_count, 10) || 0,
         }));
 

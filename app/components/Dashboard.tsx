@@ -11,10 +11,10 @@ import CsvUpload from './CsvUpload';
 
 interface FinancialData {
     date: string;
-    revenue: string;
-    expenses: string;
-    profit?: string;
-    customer_count?: string;
+    revenue: string;  
+    expenses: string;  
+    profit?: string;   
+    customer_count?: number; 
 }
 
 const Dashboard = () => {
@@ -67,11 +67,12 @@ const Dashboard = () => {
     const handleCsvUpload = (data: any[]) => {
         const updatedFinancials = data.map((row) => ({
             date: row.date,
-            revenue: parseFloat(row.revenue) || 0,
-            expenses: parseFloat(row.expenses) || 0,
-            profit: parseFloat(row.profit) || 0,
+            revenue: (parseFloat(row.revenue) || 0).toString(),
+            expenses: (parseFloat(row.expenses) || 0).toString(),
+            profit: (parseFloat(row.profit) || 0).toString(),
             customer_count: parseInt(row.customer_count, 10) || 0,
         }));
+
         setFinancials((prev) => [...prev, ...updatedFinancials]);
     };
 

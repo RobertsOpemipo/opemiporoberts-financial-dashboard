@@ -33,7 +33,7 @@ export async function GET() {
             );
         }
 
-        console.error('Unknown error:', error);
+        console.error('Unknown error:', JSON.stringify(error));
         return NextResponse.json(
             { error: 'An unknown error occurred.' },
             { status: 500 }
@@ -49,7 +49,10 @@ export async function GET() {
                         stack: closeError.stack,
                     });
                 } else {
-                    console.error('Unknown error occurred while closing the connection:', closeError);
+                    console.error(
+                        'Unknown error occurred while closing the connection:',
+                        JSON.stringify(closeError)
+                    );
                 }
             }
         }

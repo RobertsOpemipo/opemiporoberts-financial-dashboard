@@ -59,3 +59,4 @@ To upload a CSV file, follow these steps:
 1. Click on the "+" button on the dashboard.
 2. Select the CSV file from your local machine.
 3. Make sure that the CSV file has a date format of (yyyy-mm-dd)
+4. Can only upload one CSV file at a time.

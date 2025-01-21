@@ -68,7 +68,7 @@ const RevenueVsExpensesChart = ({ financials }) => {
                 },
                 beginAtZero: true,
                 ticks: {
-                    max: Math.max(...financials.map(item => Math.max(item.revenue, item.expenses))) || 10000, // Dynamic max value
+                    max: Math.max(...financials.map(item => Math.max(item.revenue, item.expenses))) || 10000, 
                 },
             },
         },

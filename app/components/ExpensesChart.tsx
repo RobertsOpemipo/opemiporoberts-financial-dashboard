@@ -28,7 +28,7 @@ const ExpensesChart = ({ financials }) => {
                         data: expensesData,
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 2,
-                        fill: false, // No fill
+                        fill: false,
                     }]
                 },
                 options: {

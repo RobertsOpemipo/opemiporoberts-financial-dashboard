@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect } from 'react';
@@ -6,17 +5,34 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-const RevenueChart = ({ financials }) => {
-    
+interface FinancialData {
+    date: string | number | Date;
+    revenue: number; // Adjust type if necessary
+}
 
-    const revenueData = financials.map((item: { revenue: any; }) => item.revenue || 0); 
-    
+interface RevenueChartProps {
+    financials: FinancialData[];
+}
+
+const RevenueChart: React.FC<RevenueChartProps> = ({ financials }) => {
+    const revenueData = financials.map(item => item.revenue || 0);
+
     useEffect(() => {
-        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const canvas = document.getElementById('revenueChart') as HTMLCanvasElement | null;
 
-        const labels = financials.map((item: { date: string | number | Date; }) => {
+        if (!canvas) {
+            throw new Error('Chart context not found');
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+            throw new Error('Chart context not found');
+        }
+
+        const labels = financials.map(item => {
             const dateValue = new Date(item.date);
-            return isNaN(dateValue) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
+            return isNaN(dateValue.getTime()) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
         });
 
         const chartInstance = new Chart(ctx, {
@@ -29,7 +45,7 @@ const RevenueChart = ({ financials }) => {
                     backgroundColor: 'rgba(75, 192, 192, 0)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 2,
-                    fill: false, 
+                    fill: false,
                 }]
             },
             options: {
@@ -42,7 +58,7 @@ const RevenueChart = ({ financials }) => {
                             text: 'Revenue ($)'
                         },
                         ticks: {
-                            callback: (value) => `$${value}` 
+                            callback: (value) => `$${value}`
                         }
                     },
                     x: {
@@ -54,8 +70,6 @@ const RevenueChart = ({ financials }) => {
                 }
             }
         });
-
-
 
         return () => {
             chartInstance.destroy();

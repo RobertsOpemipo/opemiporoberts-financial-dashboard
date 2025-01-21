@@ -5,14 +5,31 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-const ProfitChart = ({ financials }) => {
+interface FinancialData {
+    date: string;
+    profit: string; // Adjust type if necessary
+}
 
-    const profitData = financials.map(item => item.profit || 0);
-    
+interface ProfitChartProps {
+    financials: FinancialData[];
+}
+
+const ProfitChart: React.FC<ProfitChartProps> = ({ financials }) => {
+    const profitData = financials.map(item => parseFloat(item.profit) || 0);
 
     useEffect(() => {
         try {
-            const ctx = document.getElementById('profitChart').getContext('2d');
+            const canvas = document.getElementById('profitChart') as HTMLCanvasElement | null;
+
+            if (!canvas) {
+                throw new Error('Chart context not found');
+            }
+
+            const ctx = canvas.getContext('2d');
+
+            if (!ctx) {
+                throw new Error('Chart context not found');
+            }
 
             const labels = financials.map(item => {
                 const dateValue = new Date(item.date);
@@ -28,12 +45,12 @@ const ProfitChart = ({ financials }) => {
                         data: profitData,
                         borderColor: 'rgba(0, 0, 255, 1)',
                         borderWidth: 2,
-                        fill: false, 
+                        fill: false,
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false, 
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true
@@ -52,7 +69,7 @@ const ProfitChart = ({ financials }) => {
                 chartInstance.destroy();
             };
         } catch (error) {
-            alert('An error occurred while rendering the chart: ' + error.message);
+            console.error('An error occurred while rendering the chart:', error);
         }
     }, [financials]);
 

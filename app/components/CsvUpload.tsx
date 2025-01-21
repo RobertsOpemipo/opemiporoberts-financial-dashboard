@@ -2,44 +2,59 @@
 
 import React, { useRef } from "react";
 
-const CsvUpload = ({ onUpload }) => {
-    const fileInputRef = useRef(null);
-
-const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const text = e.target.result;
-            const rows = text.split("\n").map((row) => row.split(",").map(cell => cell.trim()));
-
-            const headers = ["date", "revenue", "expenses", "profit", "customer_count"];
-            const data = rows.slice(1).filter(row => row.length === headers.length && row[0] !== "")
-                .map((row) => {
-                    return {
-                        date: row[0],
-                        revenue: parseFloat(row[1]) || 0,
-                        expenses: parseFloat(row[2]) || 0,
-                        profit: parseFloat(row[3]) || 0,
-                        customer_count: parseInt(row[4], 10) || 0,
-                    };
-                });
-
-            const filteredData = data.filter((row) =>
-                !isNaN(row.revenue) &&
-                !isNaN(row.expenses) &&
-                !isNaN(row.profit) &&
-                !isNaN(row.customer_count)
-            );
-
-            onUpload(filteredData);
-        };
-        reader.readAsText(file);
-    }
+type CsvUploadProps = {
+    onUpload: (data: {
+        date: string;
+        revenue: number;
+        expenses: number;
+        profit: number;
+        customer_count: number;
+    }[]) => void;
 };
 
+const CsvUpload: React.FC<CsvUploadProps> = ({ onUpload }) => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target?.result as string;
+                const rows = text.split("\n").map((row) =>
+                    row.split(",").map((cell) => cell.trim())
+                );
+
+                const headers = ["date", "revenue", "expenses", "profit", "customer_count"];
+                const data = rows
+                    .slice(1)
+                    .filter((row) => row.length === headers.length && row[0] !== "")
+                    .map((row) => {
+                        return {
+                            date: row[0],
+                            revenue: parseFloat(row[1]) || 0,
+                            expenses: parseFloat(row[2]) || 0,
+                            profit: parseFloat(row[3]) || 0,
+                            customer_count: parseInt(row[4], 10) || 0,
+                        };
+                    });
+
+                const filteredData = data.filter(
+                    (row) =>
+                        !isNaN(row.revenue) &&
+                        !isNaN(row.expenses) &&
+                        !isNaN(row.profit) &&
+                        !isNaN(row.customer_count)
+                );
+
+                onUpload(filteredData);
+            };
+            reader.readAsText(file);
+        }
+    };
+
     const handleButtonClick = () => {
-        fileInputRef.current.click();
+        fileInputRef.current?.click();
     };
 
     return (

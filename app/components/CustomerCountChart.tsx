@@ -5,7 +5,17 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const CustomerCountChart = ({ financials }) => {
+// Define a TypeScript interface for the financials data
+interface FinancialData {
+    date: string; // Assuming the date is in ISO string format
+    customer_count?: number; // Optional, as some items might not have it
+}
+
+interface CustomerCountChartProps {
+    financials: FinancialData[]; // Expecting an array of financial data
+}
+
+const CustomerCountChart: React.FC<CustomerCountChartProps> = ({ financials }) => {
     if (!financials || financials.length === 0) {
         return (
             <div className="bg-white shadow-md rounded-lg p-4">
@@ -15,15 +25,15 @@ const CustomerCountChart = ({ financials }) => {
         );
     }
 
-    const customerCounts = financials.map(item => {
+    const customerCounts = financials.map((item) => {
         if (item.customer_count === undefined) {
             console.error('customer_count is undefined for item:', item);
         }
-        return item.customer_count ?? 0; 
+        return item.customer_count ?? 0;
     });
 
     const chartData = {
-        labels: financials.map(item => new Date(item.date).toLocaleDateString()), 
+        labels: financials.map((item) => new Date(item.date).toLocaleDateString()),
         datasets: [
             {
                 label: 'Customer Count',
@@ -37,7 +47,7 @@ const CustomerCountChart = ({ financials }) => {
 
     const options = {
         responsive: true,
-        maintainAspectRatio: false, 
+        maintainAspectRatio: false,
         indexAxis: 'x',
         plugins: {
             legend: {
@@ -65,7 +75,7 @@ const CustomerCountChart = ({ financials }) => {
                     display: true,
                     text: 'Customer Count',
                 },
-                beginAtZero: true, 
+                beginAtZero: true,
             },
         },
     };

@@ -21,21 +21,13 @@ export async function GET() {
 
         return NextResponse.json(rows);
     } catch (error) {
-        if (error instanceof Error) {
-            console.error('Error during database operation:', {
-                message: error.message,
-                stack: error.stack,
-            });
+        console.error('Error during database operation:', {
+            message: error.message,
+            stack: error.stack,
+        });
 
-            return NextResponse.json(
-                { error: 'An error occurred while retrieving data.', details: error.message },
-                { status: 500 }
-            );
-        }
-
-        console.error('Unknown error:', error);
         return NextResponse.json(
-            { error: 'An unknown error occurred.' },
+            { error: 'An error occurred while retrieving data.', details: error.message },
             { status: 500 }
         );
     } finally {
@@ -43,14 +35,7 @@ export async function GET() {
             try {
                 await connection.end();
             } catch (closeError) {
-                if (closeError instanceof Error) {
-                    console.error('Error closing the database connection:', {
-                        message: closeError.message,
-                        stack: closeError.stack,
-                    });
-                } else {
-                    console.error('Unknown error occurred while closing the connection:', closeError);
-                }
+                console.error('Error closing the database connection:', closeError.message);
             }
         }
     }

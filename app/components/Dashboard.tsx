@@ -24,30 +24,47 @@ const Dashboard = () => {
     const [error, setError] = useState<string | null>(null); 
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('/api/financials');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setFinancials(data);
-            } catch (error: unknown) {
-                if (error instanceof Error) {
-                    setError(error.message);  
-                } else {
-                    setError('An unknown error occurred');
-                }
-            } finally {
-                setLoading(false);
+    const fetchData = async () => {
+        try {
+            const response = await fetch('/api/financials');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
-        fetchData();
+            const data = await response.json();
+
+            
+            const parsedData = data.map((item: any) => ({
+                ...item,
+                revenue: parseFloat(item.revenue) || 0,
+                expenses: parseFloat(item.expenses) || 0,
+                profit: parseFloat(item.profit) || 0,
+                customer_count: parseInt(item.customer_count, 10) || 0,
+            }));
+
+            setFinancials(parsedData);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unknown error occurred');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchData();
     }, []);
 
-    const totalRevenue = financials.reduce((acc: number, curr) => acc + curr.revenue, 0);
-    const totalExpenses = financials.reduce((acc: number, curr) => acc + curr.expenses, 0);
+    const totalRevenue = financials.reduce((acc: number, curr) => acc + (curr.revenue || 0), 0);
+    const totalExpenses = financials.reduce((acc: number, curr) => acc + (curr.expenses || 0), 0);
     const profit = totalRevenue - totalExpenses;
+
+    console.log('Total Revenue:', totalRevenue);
+    console.log('Total Expenses:', totalExpenses);
+    console.log('Profit:', profit);
+
+
+
 
     if (loading) {
         return (
@@ -66,16 +83,17 @@ const Dashboard = () => {
     }
 
     const handleCsvUpload = (data: any[]) => {
-        const updatedFinancials = data.map((row) => ({
-            date: row.date,
-            revenue: parseFloat(row.revenue) || 0,
-            expenses: parseFloat(row.expenses) || 0,
-            profit: parseFloat(row.profit) || 0,
-            customer_count: parseInt(row.customer_count, 10) || 0,
-        }));
+    const updatedFinancials = data.map((row) => ({
+        date: row.date,
+        revenue: parseFloat(row.revenue) || 0,  // Ensure revenue is a number
+        expenses: parseFloat(row.expenses) || 0,  // Ensure expenses is a number
+        profit: parseFloat(row.profit) || 0,  // Ensure profit is a number
+        customer_count: parseInt(row.customer_count, 10) || 0,
+    }));
 
-        setFinancials((prev) => [...prev, ...updatedFinancials]);
+    setFinancials((prev) => [...prev, ...updatedFinancials]);
     };
+
 
     return (
         <div className="flex flex-col h-screen">
@@ -93,15 +111,15 @@ const Dashboard = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="text-white shadow-md rounded-lg p-8 bg-green-500 flex flex-col items-center justify-center h-full">
                         <h2 className="lg:text-3xl text-xl font-bold text-center pb-3">Total Revenue</h2>
-                        <p className="text-2xl text-center font-bold">${totalRevenue.toFixed(2)}</p>
+                        <p className="text-2xl text-center font-bold">${isNaN(totalRevenue) ? '0.00' : totalRevenue.toFixed(2)}</p>
                     </div>
                     <div className="bg-red-500 shadow-md rounded-lg text-white p-8 flex flex-col items-center justify-center h-full">
                         <h2 className="lg:text-3xl text-xl font-bold text-center pb-3">Total Expenses</h2>
-                        <p className="text-2xl text-center font-bold">${totalExpenses.toFixed(2)}</p>
+                        <p className="text-2xl text-center font-bold">${isNaN(totalExpenses) ? '0.00' : totalExpenses.toFixed(2)}</p>
                     </div>
                     <div className="bg-blue-500 shadow-md text-white rounded-lg p-8 flex flex-col items-center justify-center h-full">
                         <h2 className="lg:text-3xl text-xl font-bold text-center pb-3">Profit</h2>
-                        <p className="text-2xl text-center font-bold">${profit.toFixed(2)}</p>
+                        <p className="text-2xl text-center font-bold">${isNaN(profit) ? '0.00' : profit.toFixed(2)}</p>
                     </div>
                 </div>
 

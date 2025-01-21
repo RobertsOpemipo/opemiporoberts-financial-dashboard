@@ -59,9 +59,6 @@ const Dashboard = () => {
     const totalExpenses = financials.reduce((acc: number, curr) => acc + (curr.expenses || 0), 0);
     const profit = totalRevenue - totalExpenses;
 
-    console.log('Total Revenue:', totalRevenue);
-    console.log('Total Expenses:', totalExpenses);
-    console.log('Profit:', profit);
 
 
 
@@ -85,9 +82,9 @@ const Dashboard = () => {
     const handleCsvUpload = (data: any[]) => {
     const updatedFinancials = data.map((row) => ({
         date: row.date,
-        revenue: parseFloat(row.revenue) || 0,  // Ensure revenue is a number
-        expenses: parseFloat(row.expenses) || 0,  // Ensure expenses is a number
-        profit: parseFloat(row.profit) || 0,  // Ensure profit is a number
+        revenue: parseFloat(row.revenue) || 0,  
+        expenses: parseFloat(row.expenses) || 0,  
+        profit: parseFloat(row.profit) || 0,  
         customer_count: parseInt(row.customer_count, 10) || 0,
     }));
 

@@ -7,7 +7,7 @@ Chart.register(...registerables);
 
 interface FinancialData {
     date: string;
-    expenses: string;
+    expenses: number;
 }
 
 interface ExpensesChartProps {
@@ -15,64 +15,85 @@ interface ExpensesChartProps {
 }
 
 const ExpensesChart: React.FC<ExpensesChartProps> = ({ financials }) => {
-    const expensesData = financials.map(item => parseFloat(item.expenses) || 0);
-
     useEffect(() => {
-        try {
-            const canvas = document.getElementById('expensesChart') as HTMLCanvasElement | null;
+        const canvas = document.getElementById('expensesChart') as HTMLCanvasElement;
 
-            if (!canvas) {
-                throw new Error('Chart context not found');
-            }
+        if (!canvas) {
+            console.error('Canvas element not found for expenses chart');
+            return;
+        }
 
-            const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d');
 
-            if (!ctx) {
-                throw new Error('Chart context not found');
-            }
+        if (!ctx) {
+            console.error('Failed to get 2D context for expenses chart');
+            return;
+        }
 
-            const labels = financials.map(item => {
-                const dateValue = new Date(item.date);
-                return isNaN(dateValue.getTime()) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
-            });
+        // Prepare labels and data
+        const labels = financials.map((item) => {
+            const dateValue = new Date(item.date);
+            return !isNaN(dateValue.getTime())
+                ? dateValue.toISOString().split('T')[0]
+                : 'Invalid Date';
+        });
 
-            const chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
+        const expensesData = financials.map((item) => item.expenses || 0);
+
+        const chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
                         label: 'Monthly Expenses',
                         data: expensesData,
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 2,
                         fill: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Expenses ($)',
                         },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date'
-                            }
-                        }
-                    }
-                }
-            });
+                        ticks: {
+                            callback: (value) => `$${value}`,
+                        },
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date',
+                        },
+                    },
+                },
+            },
+        });
 
-            return () => {
-                chartInstance.destroy();
-            };
-        } catch (error) {
-            console.error('An error occurred while rendering the chart:', error);
-        }
+        // Cleanup on unmount
+        return () => {
+            chartInstance.destroy();
+        };
     }, [financials]);
 
-    return <canvas id="expensesChart"></canvas>;
+    // Fallback for empty data
+    if (financials.length === 0) {
+        return <p className="text-center">No expense data available.</p>;
+    }
+
+    return (
+        <div style={{ position: 'relative', width: '100%', height: '400px' }}>
+            <canvas id="expensesChart"></canvas>
+        </div>
+    );
 };
 
 export default ExpensesChart;

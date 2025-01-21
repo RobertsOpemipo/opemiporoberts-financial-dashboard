@@ -6,8 +6,8 @@ import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
 interface FinancialData {
-    date: string | number | Date;
-    revenue: number; 
+    date: string | Date;
+    revenue: number;
 }
 
 interface RevenueChartProps {
@@ -15,68 +15,86 @@ interface RevenueChartProps {
 }
 
 const RevenueChart: React.FC<RevenueChartProps> = ({ financials }) => {
-    const revenueData = financials.map(item => item.revenue || 0);
+    
+    const revenueData = financials.map((item) => item.revenue || 0);
 
     useEffect(() => {
         const canvas = document.getElementById('revenueChart') as HTMLCanvasElement | null;
 
         if (!canvas) {
-            throw new Error('Chart context not found');
+            console.error('Canvas element not found');
+            return;
         }
 
         const ctx = canvas.getContext('2d');
 
         if (!ctx) {
-            throw new Error('Chart context not found');
+            console.error('Chart context not found');
+            return;
         }
 
-        const labels = financials.map(item => {
-            const dateValue = new Date(item.date);
-            return isNaN(dateValue.getTime()) ? 'Invalid Date' : dateValue.toISOString().split('T')[0];
+        
+        const labels = financials.map((item) => {
+            const date = new Date(item.date);
+            return !isNaN(date.getTime()) ? date.toISOString().split('T')[0] : 'Invalid Date';
         });
 
+        
         const chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Monthly Revenue',
-                    data: revenueData,
-                    backgroundColor: 'rgba(75, 192, 192, 0)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 2,
-                    fill: false,
-                }]
+                labels,
+                datasets: [
+                    {
+                        label: 'Monthly Revenue',
+                        data: revenueData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                    },
+                ],
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Revenue ($)'
+                            text: 'Revenue ($)',
                         },
                         ticks: {
-                            callback: (value) => `$${value}`
-                        }
+                            callback: (value) => `$${value}`,
+                        },
                     },
                     x: {
                         title: {
                             display: true,
-                            text: 'Date'
-                        }
-                    }
-                }
-            }
+                            text: 'Date',
+                        },
+                    },
+                },
+            },
         });
 
+        
         return () => {
             chartInstance.destroy();
         };
     }, [financials]);
 
-    return <canvas id="revenueChart"></canvas>;
+    
+    if (financials.length === 0) {
+        return <p className="text-center">No financial data available.</p>;
+    }
+
+    return (
+        <div style={{ position: 'relative', width: '100%', height: '400px' }}>
+            <canvas id="revenueChart"></canvas>
+        </div>
+    );
 };
 
 export default RevenueChart;

@@ -9,45 +9,36 @@ import RevenueVsExpensesChart from './RevenueVsExpensesChart';
 import ProfitVsCustomerCountChart from './ProfitVsCustomerCountChart';
 import CsvUpload from './CsvUpload'; 
 
-// Define a type for the financial data
-interface FinancialData {
-    date: string;
-    revenue: number;
-    expenses: number;
-    profit: number;
-    customer_count: number;
-}
-
 const Dashboard = () => {
-    const [financials, setFinancials] = useState<FinancialData[]>([]); // Improved typing
+    const [financials, setFinancials] = useState<any>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null); // Ensure error state is typed as string or null
+    const [error, setError] = useState<string | null>(null); 
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('/api/financials');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data: FinancialData[] = await response.json(); // Added type inference
-                setFinancials(data);
-            } catch (error: unknown) {
-                if (error instanceof Error) {
-                    setError(error.message);  
-                } else {
-                    setError('An unknown error occurred');
-                }
-            } finally {
-                setLoading(false);
+    const fetchData = async () => {
+        try {
+            const response = await fetch('/api/financials');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        };
-        fetchData();
-    }, []);
+            const data = await response.json();
+            setFinancials(data);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setError(error.message);  
+            } else {
+                setError('An unknown error occurred');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchData();
+}, []);
 
-    // Ensure total revenue, expenses, and profit are numbers
-    const totalRevenue = financials.reduce((acc, curr) => acc + (isNaN(curr.revenue) ? 0 : curr.revenue), 0);
-    const totalExpenses = financials.reduce((acc, curr) => acc + (isNaN(curr.expenses) ? 0 : curr.expenses), 0);
+
+    const totalRevenue = financials.reduce((acc, curr) => acc + parseFloat(curr.revenue) || 0, 0);
+    const totalExpenses = financials.reduce((acc, curr) => acc + parseFloat(curr.expenses) || 0, 0);
     const profit = totalRevenue - totalExpenses;
 
     if (loading) {
@@ -66,8 +57,7 @@ const Dashboard = () => {
         );
     }
 
-    // Handle CSV upload and convert the data into proper format
-    const handleCsvUpload = (data: { [key: string]: string }[]) => {
+    const handleCsvUpload = (data: any[]) => {
         const updatedFinancials = data.map((row) => ({
             date: row.date,
             revenue: parseFloat(row.revenue) || 0,

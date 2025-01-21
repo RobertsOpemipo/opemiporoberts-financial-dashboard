@@ -7,38 +7,45 @@ import ProfitChart from './ProfitChart';
 import CustomerCountChart from './CustomerCountChart';
 import RevenueVsExpensesChart from './RevenueVsExpensesChart';
 import ProfitVsCustomerCountChart from './ProfitVsCustomerCountChart';
-import CsvUpload from './CsvUpload'; 
+import CsvUpload from './CsvUpload';
+
+interface FinancialData {
+    date: string;
+    revenue: string;
+    expenses: string;
+    profit?: string;
+    customer_count?: string;
+}
 
 const Dashboard = () => {
-    const [financials, setFinancials] = useState<any>([]);
+    const [financials, setFinancials] = useState<FinancialData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null); 
 
     useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const response = await fetch('/api/financials');
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/financials');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setFinancials(data);
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setError(error.message);  
+                } else {
+                    setError('An unknown error occurred');
+                }
+            } finally {
+                setLoading(false);
             }
-            const data = await response.json();
-            setFinancials(data);
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                setError(error.message);  
-            } else {
-                setError('An unknown error occurred');
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-    fetchData();
-}, []);
+        };
+        fetchData();
+    }, []);
 
-
-    const totalRevenue = financials.reduce((acc, curr) => acc + parseFloat(curr.revenue) || 0, 0);
-    const totalExpenses = financials.reduce((acc, curr) => acc + parseFloat(curr.expenses) || 0, 0);
+    const totalRevenue = financials.reduce((acc: number, curr) => acc + parseFloat(curr.revenue) || 0, 0);
+    const totalExpenses = financials.reduce((acc: number, curr) => acc + parseFloat(curr.expenses) || 0, 0);
     const profit = totalRevenue - totalExpenses;
 
     if (loading) {
@@ -111,7 +118,7 @@ const Dashboard = () => {
                     </div>
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <h2 className="text-xl font-bold">Monthly Profit</h2>
-                        <ProfitChart financials={financials}  />
+                        <ProfitChart financials={financials} />
                     </div>
                     <div className="bg-white shadow-md rounded-lg p-4">
                         <h2 className="text-xl font-bold">Customer Count over Time</h2>

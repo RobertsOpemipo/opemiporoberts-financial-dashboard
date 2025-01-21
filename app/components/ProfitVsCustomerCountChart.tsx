@@ -5,13 +5,13 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, Tooltip, Le
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, Tooltip, Legend, Title);
 
-// Define the structure of the financial data
+
 interface FinancialData {
     customer_count: string | number;
     profit: string | number;
 }
 
-// Props type for the chart component
+
 interface ProfitVsCustomerCountChartProps {
     financials: FinancialData[];
 }
@@ -62,7 +62,7 @@ const ProfitVsCustomerCountChart: React.FC<ProfitVsCustomerCountChartProps> = ({
                 beginAtZero: true,
                 ticks: {
                     callback: function (tickValue: string | number) {
-                        // Ensure tickValue is coerced into a number for formatting
+                        
                         const value = typeof tickValue === 'string' ? parseFloat(tickValue) : tickValue;
                         return `$${value}`;
                     },

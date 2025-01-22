@@ -10,7 +10,7 @@ import RevenueVsExpensesChart from './RevenueVsExpensesChart';
 import ProfitVsCustomerCountChart from './ProfitVsCustomerCountChart';
 import CsvUpload from './CsvUpload';
 
-// Define the structure of financial data
+
 interface FinancialData {
     date: string;
     revenue: number;  
@@ -33,7 +33,7 @@ const Dashboard = () => {
                 }
                 const data = await response.json();
 
-                // Type safe parsing of data
+                
                 const parsedData: FinancialData[] = data.map((item: any) => ({
                     ...item,
                     revenue: parseFloat(item.revenue) || 0,
@@ -56,11 +56,11 @@ const Dashboard = () => {
 
         fetchData();
 
-        // Cleanup function for async request
+        
         return () => {
             setLoading(false);
         };
-    }, []); // This effect runs once when the component mounts
+    }, []); 
 
     // Calculations
     const totalRevenue = financials.reduce((acc, curr) => acc + (curr.revenue || 0), 0);
@@ -84,7 +84,7 @@ const Dashboard = () => {
     }
 
     const handleCsvUpload = (data: FinancialData[]) => {
-        // Ensure correct typing on upload
+        
         setFinancials((prev) => [...prev, ...data]);
     };
 

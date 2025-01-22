@@ -30,7 +30,7 @@ const ExpensesChart: React.FC<ExpensesChartProps> = ({ financials }) => {
             return;
         }
 
-        // Prepare labels and data
+        
         const labels = financials.map((item) => {
             const dateValue = new Date(item.date);
             return !isNaN(dateValue.getTime())
@@ -78,13 +78,13 @@ const ExpensesChart: React.FC<ExpensesChartProps> = ({ financials }) => {
             },
         });
 
-        // Cleanup on unmount
+        
         return () => {
             chartInstance.destroy();
         };
     }, [financials]);
 
-    // Fallback for empty data
+    
     if (financials.length === 0) {
         return <p className="text-center">No expense data available.</p>;
     }

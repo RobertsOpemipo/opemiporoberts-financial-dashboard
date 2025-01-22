@@ -62,7 +62,7 @@ const Dashboard = () => {
         };
     }, []); 
 
-    // Calculations
+    
     const totalRevenue = financials.reduce((acc, curr) => acc + (curr.revenue || 0), 0);
     const totalExpenses = financials.reduce((acc, curr) => acc + (curr.expenses || 0), 0);
     const profit = totalRevenue - totalExpenses;

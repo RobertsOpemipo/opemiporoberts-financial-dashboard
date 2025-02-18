@@ -46,7 +46,7 @@ const ExpensesChart: React.FC<ExpensesChartProps> = ({ financials }) => {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Monthly Expenses',
+                        label: 'Monthlyy Expenses',
                         data: expensesData,
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 2,
